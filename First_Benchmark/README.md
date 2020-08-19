@@ -14,6 +14,7 @@ Another script the lab has created is a script that uses regular image processin
 ![image](https://user-images.githubusercontent.com/23155874/84882400-dfd43c80-b097-11ea-8e04-0d7d96c9b406.png)
 
 3. __Averaging the nuclei details per tiled image.__
+	(B) Another option is to sum all the nuclei data instead of average it. This will also add a dimension of volume for when we have more nuclei in the image, the larger the value is.
 4. __K-Means:__
 	We thought of doing PCA as well but 1400 features are no problem for k-means.
 ![image](https://user-images.githubusercontent.com/23155874/84882461-f67a9380-b097-11ea-9c3b-92c21bca270c.png)

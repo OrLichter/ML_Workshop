@@ -22,12 +22,14 @@ From its name it's not too hard to uderstand what it does. This scaler goes over
 X_std = (X - X.min(axis=0)) / (X.max(axis=0) - X.min(axis=0))
 X_scaled = X_std * (max - min) + min
 ```
+You can find the trained scaler under `Pickled Data -> MinMax_scaler.pickle`
 
 ### Standard Scaler
 This scaler takes each feature of the data and transforms it to be normally distributed. The process is still prety simple - over the first iteration of the data (`fit`) the scaler calculates the mean and the standard deviation. On the second run of the data (`transform`) it scales the data to be normally distributed:
 ```
 z = (x - mean) / stdv
 ```
+You can find the trained scaler under `Pickled Data -> standard_scaler.pickle`
 
 ## MiniBatch Kmeans
 Most clustering algorithms need to have all the data in order to work. Kmeans, needs all the data in order to perform the iteration on centers and to calculate the distances, DBSCAN needs all data in order to count the number of data points in epsilon distance and so on... 
@@ -40,7 +42,9 @@ Rons Part
 ********************/
 
 ## Visualizing the Data
-
+One of the features extracted from QuPath is the x,y pixel center for each nuclei. We though - we have the center pixels, we have a cluster for each nuclei, why not try to visualize it?! So that's what we did.
+You can use the `ImageChange2NucleiClasses.py` to download the data saved in my Google Drive, or refer it to a local path and get the following image:
+![image](https://user-images.githubusercontent.com/23155874/94807228-04aab080-03f8-11eb-8ff1-c75ac895cbf5.png)
 
 
 

@@ -135,7 +135,7 @@ class GoogleClient:
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            print("Download %d%%." % int(status.progress() * 100))
+            # print("Download %d%%." % int(status.progress() * 100))
         fh.seek(0)
         # DONT FORGET TO CLOSE fh!!
         return fh

@@ -3,6 +3,7 @@ import pandas as pd
 from typing import Union, Optional
 from GoogleDriveClass import GoogleClient
 import os
+from tqdm import tqdm
 
 COLOR_DICT = {
     0: (0, 191, 255),
@@ -53,10 +54,11 @@ def nuclei_by_group(image_path: str, csv_path: str, k: int, circle_radius: int=4
         concatenated_image.show()
     if output_path:
         concatenated_image.save(output_path)
+        print("Saved output_path")
 
 
 def download_and_color_whole_slide(slide_name: str, k: int,output_folder: Optional[str]=None,
-                                   images_folder: str='Normalized Images', data_folder: str='Kmean Mini Batch'):
+                                   images_folder: str='Normalized Images', data_folder: str='Kmean Mini Batch (Standard Scaler)'):
     """
 
     Args:
@@ -90,19 +92,21 @@ def download_and_color_whole_slide(slide_name: str, k: int,output_folder: Option
     kmeans_data = client.get_all_files(folder_name=data_folder, substring=slide_name)
     if output_folder and not os.path.exists(output_folder):
         os.makedirs(output_folder)
-    for file_dict in slides:
+    for file_dict in tqdm(slides):
         slide_file_id, file_name = file_dict.values()
         data_file_id = file_id_by_name(kmeans_data, file_name[:-4])
-        slide = client.download_file(slide_file_id)
-        data = client.download_file(data_file_id)
-        if output_folder:
-            output_path = output_folder + '/' + file_name
-            nuclei_by_group(slide, data, 4, output_path=output_path, show=False)
-        else:
-            nuclei_by_group(slide, data, 4)
+        try:
+            slide = client.download_file(slide_file_id)
+            data = client.download_file(data_file_id)
+            if output_folder:
+                output_path = output_folder + '/' + file_name
+                nuclei_by_group(slide, data, 4, output_path=output_path, show=False)
+            else:
+                nuclei_by_group(slide, data, 4)
+            slide.close()
+            data.close()
+        except Exception:
+            print(f"Could not find either data or slide for {file_name}")
 
 
-# nuclei_by_group('MB16CC002_2f369183-05a9-401b-ae3f-44ddf1f68d9e.SCN - Series 2_Region9.png_HS.png',
-#                 'MB16CC002_2f369183-05a9-401b-ae3f-44ddf1f68d9e.SCN - Series 2_Region9.png_HS.png - Scaled.csv',
-#                 6)
-download_and_color_whole_slide('MB16CC002', 4)
+download_and_color_whole_slide('MB16CC009', 4, output_folder='Outputs')

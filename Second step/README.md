@@ -82,4 +82,4 @@ You can use the `ImageChange2NucleiClasses.py` to download the data saved in my 
 
 ## Process Flow
 
-![Flowchart](https://user-images.githubusercontent.com/23155874/95443927-e0098800-0965-11eb-9804-3be3a0d90ca6.png)
+![Flowchart](https://user-images.githubusercontent.com/23155874/95594965-4a005b00-0a54-11eb-9787-be1cbee70d13.png)

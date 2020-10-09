@@ -36,10 +36,42 @@ Most clustering algorithms need to have all the data in order to work. Kmeans, n
 After some searching we found [MiniBatch Kmeans](https://scikit-learn.org/stable/modules/clustering.html#mini-batch-kmeans). The algorithm assumes we sample iid samples from the dataset and performs Kmeans on them while keeping the center average of all sampled data. Using this algorithm we managed to cluster the huge data.
 
 
+## Aggregating the Data
 
-/*******************
-Rons Part
-********************/
+After clustering the nuclei, we had to determin a clustering for each image.
+In order to do so, we decided on three methodologies:
+1)	**Majority Vote**:
+Clustering each image with a "majority vote" of the image's nuclei clusters. 
+For examples, if the nuclei are clustered in groups 0-4, and for an image most of the nuclei are clustered to group 3, then the entire image is clustered to group 3. 
+Specifically, it means the number of possible clusters for images is the same as number of possible clusters for nuclei.
+The code for this can be found in file `majority_vote`.
+
+2)	**Histogram**:
+Here we have calculated the percentage of nuclei of each cluster at each image. This way we have created for each image a k-dimensional vector , where k is the number of possible clusters for nuclei, so that feature i in this vector represents the percentage of nuclei (in that specific image) clustered to group i. On these k-dimensoinal vectors we have run another K-means process to cluster the images.
+In this method the number of possible clusters for images does not depend on the number of possible clusters for nuclei. For example, on the nuclei level we can cluster to 7 groups, and on the image level to 4 groups only. 
+We have ran all variations for number of nuclei clusters between 2 to 10, with number of image clusters between 2 to 10 (81 variations at all).
+
+3) **Image average**:
+We have clustered images "straight forward" (using K-means) without clustering nuclei before hand, by calculating an average on all nuclei for each image (The average was calculated feature-wise, so that if Qpath gave us for each nucleus an ~1400 dimensional vector of features, we calculate an ~1400 dimensional average vector for the entire image). 
+
+
+## Metrics
+Besides evaluating our clusters on QTL and Kaplan-Meir analyses, we have tested our results using some common clustering metrices. 
+These metrices require ground-truth labeling, which we don't have, so we did the following, knowing that the results of these metrices should be taken with limited importance:
+
+We have created a "ground-truth" labeling by looking at each mice line as a group, and clustering each image according to it's mouse's line. 
+The metrices we have used are:
+-	NMI (Normalized Mutual Information)
+-	AMI (Adjusted Mutual Information)
+-	ARI (Adjusted Rand Index)
+-	Homogeneity
+-	Completeness
+-	V_Measure (Which calculates an average of the above two metrices)
+-	Fowlkes Mallows
+
+We are familiar also with metrices that do not require ground truth labels, such as Silhouette metric,  clustered objects. Nevertheless, as it is not clear what would be a right distance function between the clustered images, and as calculating the distance of such a large dataset is computationally hard we have decided not to calculate these metrics.
+
+
 
 ## Visualizing the Data
 One of the features extracted from QuPath is the x,y pixel center for each nuclei. We though - we have the center pixels, we have a cluster for each nuclei, why not try to visualize it?! So that's what we did.

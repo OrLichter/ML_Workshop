@@ -4,6 +4,7 @@ from typing import Union, Optional
 from GoogleDriveClass import GoogleClient
 import os
 from tqdm import tqdm
+import glob
 
 COLOR_DICT = {
     0: (0, 191, 255),
@@ -58,7 +59,8 @@ def nuclei_by_group(image_path: str, csv_path: str, k: int, circle_radius: int=4
 
 
 def download_and_color_whole_slide(slide_name: str, k: int,output_folder: Optional[str]=None,
-                                   images_folder: str='Normalized Images', data_folder: str='Kmean Mini Batch (Standard Scaler)'):
+                                   images_folder: str='Normalized Images', data_folder: str='Kmean Mini Batch (Standard Scaler)',
+                                   from_drive: bool = True):
     """
 
     Args:
@@ -67,6 +69,8 @@ def download_and_color_whole_slide(slide_name: str, k: int,output_folder: Option
         output_folder: The folder to output all the files to. If left empty prints all results
         images_folder: The images folder in Google Drive
         data_folder: The data folder in Google Drive
+        from_drive: whether to download the files from Google Drive
+
 
     Returns:
 
@@ -87,26 +91,33 @@ def download_and_color_whole_slide(slide_name: str, k: int,output_folder: Option
                 return file_dict.get('id')
         return None
 
-    client = GoogleClient()
-    slides = client.get_all_files(folder_name=images_folder, substring=slide_name)
-    kmeans_data = client.get_all_files(folder_name=data_folder, substring=slide_name)
     if output_folder and not os.path.exists(output_folder):
         os.makedirs(output_folder)
-    for file_dict in tqdm(slides):
-        slide_file_id, file_name = file_dict.values()
-        data_file_id = file_id_by_name(kmeans_data, file_name[:-4])
-        try:
-            slide = client.download_file(slide_file_id)
-            data = client.download_file(data_file_id)
-            if output_folder:
-                output_path = output_folder + '/' + file_name
-                nuclei_by_group(slide, data, 4, output_path=output_path, show=False)
-            else:
-                nuclei_by_group(slide, data, 4)
-            slide.close()
-            data.close()
-        except Exception:
-            print(f"Could not find either data or slide for {file_name}")
 
+    if from_drive:
+        client = GoogleClient()
+        slides = client.get_all_files(folder_name=images_folder, substring=slide_name)
+        kmeans_data = client.get_all_files(folder_name=data_folder, substring=slide_name)
 
-download_and_color_whole_slide('MB16CC009', 4, output_folder='Outputs')
+        for file_dict in tqdm(slides):
+            slide_file_id, file_name = file_dict.values()
+            data_file_id = file_id_by_name(kmeans_data, file_name[:-4])
+            try:
+                slide = client.download_file(slide_file_id)
+                data = client.download_file(data_file_id)
+                if output_folder:
+                    output_path = output_folder + '/' + file_name
+                    nuclei_by_group(slide, data, 4, output_path=output_path, show=False)
+                else:
+                    nuclei_by_group(slide, data, 4)
+                slide.close()
+                data.close()
+            except Exception:
+                print(f"Could not find either data or slide for {file_name}")
+    else:
+        slide = glob.glob(f'{images_folder}/*{slide_name}*')
+        kmeans_data = glob.glob(f'{data_folder}/*{slide_name}*')
+
+        ### to implement
+
+download_and_color_whole_slide('MB16CC001', 5, output_folder='Outputs')

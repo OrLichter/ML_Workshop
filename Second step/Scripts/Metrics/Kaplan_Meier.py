@@ -18,7 +18,7 @@ files.extend(glob.glob('../../image clusters/minmax scaler/Mouse Aggregation/*.c
 def kaplan_meier_calc(file_path: str) -> None:
     print(file_path)
     mouse_cluster_df = pd.read_csv(file_path)
-    df = pd.merge(mouse_cluster_df, SACRIFICE_DF,left_on='Mouse #', right_on='Mouse')
+    df = pd.merge(mouse_cluster_df, SACRIFICE_DF,on='Mouse #')
 
     file_name = file_path.split('/')[-1].split('.')[0]
     scaling_type = file_path.split('/')[-3]
@@ -29,7 +29,7 @@ def kaplan_meier_calc(file_path: str) -> None:
     kmf = KaplanMeierFitter()
 
     fig.suptitle(save_name, fontsize=20)
-    for k in range(2,1 1):
+    for k in range(2,11):
         ax = axs[int((k-2)/3), (k-2) % 3]
         ax.set_title(f'K={k}')
         for name, grouped_df in df.groupby(f'K={k}'):

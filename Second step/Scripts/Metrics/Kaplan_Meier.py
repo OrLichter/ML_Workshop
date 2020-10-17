@@ -11,8 +11,8 @@ SACRIFICE_TIME_FILE_PATH = '../../Mice Sacrafice Time.xlsx'
 SACRIFICE_DF = pd.read_excel(SACRIFICE_TIME_FILE_PATH)
 SACRIFICE_DF.head()
 
-files = glob.glob('../../image clusters/standard scaler/Mouse Aggregation/*.csv')
-files.extend(glob.glob('../../image clusters/minmax scaler/Mouse Aggregation/*.csv'))
+files = glob.glob('../../Results/image clusters/standard scaler/Mouse Aggregation/*.csv')
+files.extend(glob.glob('../../Results/image clusters/minmax scaler/Mouse Aggregation/*.csv'))
 
 
 def kaplan_meier_calc(file_path: str) -> None:

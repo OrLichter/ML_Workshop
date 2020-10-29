@@ -10,7 +10,7 @@ warnings.filterwarnings("ignore")
 SACRIFICE_TIME_FILE_PATH = '../../Mice Sacrafice Time.xlsx'
 SACRIFICE_DF = pd.read_excel(SACRIFICE_TIME_FILE_PATH)
 SACRIFICE_DF.head()
-
+KAPLAN_MEIER_RESULTS = {}
 files = glob.glob('../../Results/image clusters/standard scaler/Mouse Aggregation/*.csv')
 files.extend(glob.glob('../../Results/image clusters/minmax scaler/Mouse Aggregation/*.csv'))
 
@@ -27,7 +27,6 @@ def kaplan_meier_calc(file_path: str) -> None:
     fig, axs = plt.subplots(3, 3, figsize=(15, 15))
 
     kmf = KaplanMeierFitter()
-
     fig.suptitle(save_name, fontsize=20)
     for k in range(2,11):
         ax = axs[int((k-2)/3), (k-2) % 3]
@@ -37,8 +36,12 @@ def kaplan_meier_calc(file_path: str) -> None:
             kmf.plot(ax=ax)
         results = multivariate_logrank_test(df.Month, df[f'K={k}'], df.Event, weightings='wilcoxon')
         text(0.2, 0.5, f'P-Value: {round(results.p_value,3)}', ha='center', va='center', transform=ax.transAxes)
-    plt.savefig(f'{save_name}.png')
+        KAPLAN_MEIER_RESULTS[f'{save_name}_{k}'] = round(results.p_value, 3)
+    # plt.savefig(f'{save_name}.png')
 
 
 for file in files:
     kaplan_meier_calc(file)
+
+for key in KAPLAN_MEIER_RESULTS.keys():
+    print(f'{key}: {KAPLAN_MEIER_RESULTS[key]}')

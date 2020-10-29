@@ -58,7 +58,7 @@ def nuclei_by_group(image_path: str, csv_path: str, k: int, circle_radius: int=4
         print("Saved output_path")
 
 
-def download_and_color_whole_slide(slide_name: str, k: int,output_folder: Optional[str]=None,
+def download_and_color_whole_slide(slide_name: str, k: int, output_folder: Optional[str]=None,
                                    images_folder: str='Normalized Images', data_folder: str='Kmean Mini Batch (Standard Scaler)',
                                    from_drive: bool = True):
     """
@@ -100,24 +100,12 @@ def download_and_color_whole_slide(slide_name: str, k: int,output_folder: Option
         kmeans_data = client.get_all_files(folder_name=data_folder, substring=slide_name)
 
         for file_dict in tqdm(slides):
-            slide_file_id, file_name = file_dict.values()
-            data_file_id = file_id_by_name(kmeans_data, file_name[:-4])
-            try:
-                slide = client.download_file(slide_file_id)
-                data = client.download_file(data_file_id)
-                if output_folder:
-                    output_path = output_folder + '/' + file_name
-                    nuclei_by_group(slide, data, 4, output_path=output_path, show=False)
-                else:
-                    nuclei_by_group(slide, data, 4)
-                slide.close()
-                data.close()
-            except Exception:
-                print(f"Could not find either data or slide for {file_name}")
+            ## If we want to download a lot, could be done in threads.
+
     else:
         slide = glob.glob(f'{images_folder}/*{slide_name}*')
         kmeans_data = glob.glob(f'{data_folder}/*{slide_name}*')
 
         ### to implement
 
-download_and_color_whole_slide('MB16CC001', 5, output_folder='Outputs')
+download_and_color_whole_slide('MB16CC003', k=7, output_folder='Outputs')

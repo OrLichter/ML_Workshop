@@ -101,6 +101,7 @@ def download_and_color_whole_slide(slide_name: str, k: int, output_folder: Optio
 
         for file_dict in tqdm(slides):
             ## If we want to download a lot, could be done in threads.
+            pass
 
     else:
         slide = glob.glob(f'{images_folder}/*{slide_name}*')
